@@ -7,8 +7,9 @@
     "node": "20.x"
   },
   "scripts": {
+    "dev": "node --watch server/index.js",
     "start": "node server/index.js",
-    "test": "node --test tests/api.test.mjs"
+    "test": "node --test"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

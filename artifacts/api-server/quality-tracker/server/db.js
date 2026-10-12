@@ -2,12 +2,10 @@ import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 
-const databasePath = path.resolve(
-  process.env.DATABASE_PATH || path.join(process.cwd(), "data", "app.db"),
-);
-fs.mkdirSync(path.dirname(databasePath), { recursive: true });
+const dataDirectory = path.join(process.cwd(), "data");
+fs.mkdirSync(dataDirectory, { recursive: true });
 
-export const db = new Database(databasePath);
+export const db = new Database(path.join(dataDirectory, "app.db"));
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
@@ -29,12 +27,16 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
-  CREATE INDEX IF NOT EXISTS idx_inspections_date
-    ON inspections (inspection_date DESC, id DESC);
-  CREATE INDEX IF NOT EXISTS idx_inspections_status_severity
-    ON inspections (status, severity);
+  CREATE INDEX IF NOT EXISTS idx_inspections_severity
+    ON inspections (severity);
+  CREATE INDEX IF NOT EXISTS idx_inspections_status
+    ON inspections (status);
+  CREATE INDEX IF NOT EXISTS idx_inspections_inspection_date
+    ON inspections (inspection_date);
 `);
 
 export function closeDatabase() {
   if (db.open) db.close();
 }
+
+export default db;

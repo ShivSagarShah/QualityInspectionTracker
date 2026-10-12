@@ -1,8 +1,7 @@
 FROM node:20-bookworm-slim
 
 ENV NODE_ENV=production \
-    PORT=3000 \
-    DATABASE_PATH=/app/data/app.db
+    PORT=3000
 
 WORKDIR /app
 

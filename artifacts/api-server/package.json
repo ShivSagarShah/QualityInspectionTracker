@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development node ./quality-tracker/server/index.js",
+    "dev": "cd quality-tracker && NODE_ENV=development node --watch server/index.js",
     "build": "node --check ./quality-tracker/server/index.js",
-    "start": "node ./quality-tracker/server/index.js",
+    "start": "cd quality-tracker && node server/index.js",
+    "test": "cd quality-tracker && node --test",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

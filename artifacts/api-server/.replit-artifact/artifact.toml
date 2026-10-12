@@ -21,11 +21,11 @@ args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
 NODE_ENV = "production"
 
 [services.production.run]
-args = ["node", "artifacts/api-server/quality-tracker/server/index.js"]
+args = ["bash", "-lc", "cd artifacts/api-server/quality-tracker && exec node server/index.js"]
 
 [services.production.run.env]
 PORT = "8080"
 NODE_ENV = "production"
 
 [services.production.health.startup]
-path = "/api/healthz"
+path = "/api/health"

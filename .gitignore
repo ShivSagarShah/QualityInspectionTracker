@@ -5,6 +5,10 @@ dist
 tmp
 out-tsc
 *.tsbuildinfo
+/data/
+*.db
+*.db-shm
+*.db-wal
 .expo
 .expo-shared
 

@@ -1,0 +1,1 @@
+- [Node 20 native addons](node20-native-addons.md) — pnpm lifecycle builds may use Node 24 even when shell Node 20 is selected; match native addon ABI to the workflow runtime.

@@ -1,0 +1,56 @@
+PROJECT: "Quality Inspection Tracker" for textile shop-floor supervisors at a fabric
+plant. Used on a mobile phone (design at 390px width). Internal tool, keep it simple.
+
+FIXED STACK (do not change or suggest alternatives):
+- Backend: Node.js 20 + Express + better-sqlite3 (SQLite file at ./data/app.db)
+- Frontend: plain HTML + CSS + vanilla JavaScript (ES modules), NO build step,
+  served as static files from the backend's /public folder
+- Single process, single port (3000)
+- Docker: one Dockerfile + docker-compose.yml
+
+FOLDER STRUCTURE:
+quality-tracker/
+  server/
+    index.js          (express app setup, static serving, route mounting)
+    db.js             (sqlite init + schema)
+    routes/inspections.js
+    routes/summary.js
+    routes/sap.js     (bonus)
+    routes/auth.js    (bonus)
+    middleware/auth.js (bonus)
+  public/
+    index.html
+    css/styles.css
+    js/app.js, api.js, ui.js, offline.js (bonus)
+    sw.js, manifest.json (bonus)
+  tests/api.test.js
+  Dockerfile, docker-compose.yml, package.json, README.md, .gitignore
+
+DATABASE: table `inspections`
+  id            INTEGER PRIMARY KEY AUTOINCREMENT
+  client_id     TEXT UNIQUE            -- UUID from client, makes offline sync idempotent
+  inspection_date TEXT NOT NULL        -- ISO date YYYY-MM-DD
+  machine_id    TEXT NOT NULL          -- free text
+  defect_type   TEXT NOT NULL CHECK IN ('Weave Defect','Shade Variation','Hole/Tear','Count Deviation','Other')
+  severity      TEXT NOT NULL CHECK IN ('Critical','Major','Minor')
+  remarks       TEXT
+  status        TEXT NOT NULL DEFAULT 'Open' CHECK IN ('Open','Resolved')
+  resolution_note TEXT
+  resolved_at   TEXT
+  source        TEXT NOT NULL DEFAULT 'manual'   -- 'manual' or 'sap'
+  created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+
+API CONTRACT (JSON everywhere; errors as {"error":"message"} with proper HTTP codes):
+  POST   /api/inspections            create (400 on validation failure)
+  GET    /api/inspections            query params: severity, status, from, to (dates),
+                                     sort (inspection_date|severity|status|created_at),
+                                     order (asc|desc). Default: newest first.
+  GET    /api/inspections/:id        single record (404 if missing)
+  PATCH  /api/inspections/:id/resolve  body {resolution_note} — note REQUIRED and
+                                     non-empty; 409 if already resolved
+  GET    /api/summary                {Critical:{open,resolved}, Major:{...}, Minor:{...}, total:{open,resolved}}
+  GET    /api/health                 {status:"ok"}
+
+RULES: Use parameterized SQL only (never string concatenation). Validate all input
+server-side. Whitelist sort columns. Sort severity as Critical>Major>Minor, not
+alphabetically. Write clean, commented, modular code. Output complete files, not snippets.
